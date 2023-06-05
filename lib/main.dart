@@ -1,40 +1,56 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+Color seedColor = Color(Colors.amber.value);
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Application name
-      title: 'Flutter Hello World',
-      // Application theme data, you can set the colors for the application as
-      // you want
+      title: 'Snippeto',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor,
+          brightness: Brightness.light,
+        ),
       ),
-      // A widget which will be started on application startup
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: ThemeMode.system,
+      home: const HomePage(title: 'Hello World'),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String title;
-  const MyHomePage({super.key, required this.title});  
+  const HomePage({Key? key, required this.title}) : super(key: key);
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    double mediaQuery = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        // The title text which will be shown on the action bar
-        title: Text(title),
+        centerTitle: true,
+        title: Text(widget.title),
       ),
       body: Center(
-        child: Text(
-          'Hello, World!',
+        child: Column(
+          children: [
+            Text('MediaQuery: $mediaQuery'),
+          ],
         ),
       ),
     );

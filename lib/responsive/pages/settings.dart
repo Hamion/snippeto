@@ -28,31 +28,25 @@ class _SettingsState extends State<Settings> {
                     title: const Text('Light'),
                     value: ThemeMode.light,
                     groupValue: selectedThemeMode,
-                    onChanged: (ThemeMode? value) => setState(
-                      () {
-                        selectedThemeMode = value;
-                      },
-                    ),
+                    onChanged: (ThemeMode? value) => setState(() {
+                      selectedThemeMode = value;
+                    }),
                   ),
                   RadioListTile<ThemeMode>(
                     title: const Text('Dark'),
                     value: ThemeMode.dark,
                     groupValue: selectedThemeMode,
-                    onChanged: (ThemeMode? value) => setState(
-                      () {
-                        selectedThemeMode = value;
-                      },
-                    ),
+                    onChanged: (ThemeMode? value) => setState(() {
+                      selectedThemeMode = value;
+                    }),
                   ),
                   RadioListTile<ThemeMode>(
                     title: const Text('System settings'),
                     value: ThemeMode.system,
                     groupValue: selectedThemeMode,
-                    onChanged: (ThemeMode? value) => setState(
-                      () {
-                        selectedThemeMode = value;
-                      },
-                    ),
+                    onChanged: (ThemeMode? value) => setState(() {
+                      selectedThemeMode = value;
+                    }),
                   ),
                 ],
               ),
@@ -66,6 +60,7 @@ class _SettingsState extends State<Settings> {
                 TextButton(
                   onPressed: () {
                     themeProvider.setThemeMode(selectedThemeMode);
+                    initDesign();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Ok'),
@@ -78,16 +73,22 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  void initDesign() {
+    setState(() {
+      if (widget.themeProvider.themeMode == ThemeMode.dark) {
+        design = 'Dark';
+      } else if (widget.themeProvider.themeMode == ThemeMode.light) {
+        design = 'Light';
+      } else {
+        design = 'System settings';
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    if (widget.themeProvider.themeMode == ThemeMode.dark) {
-      design = 'Dark';
-    } else if (widget.themeProvider.themeMode == ThemeMode.light) {
-      design = 'Light';
-    } else {
-      design = 'System settings';
-    }
+    initDesign();
   }
 
   @override
@@ -107,7 +108,6 @@ class _SettingsState extends State<Settings> {
           const AboutListTile(
             applicationName: 'Snippeto',
             applicationVersion: '0.1.0',
-            icon: Icon(Icons.info_outline),
           ),
         ],
       ),

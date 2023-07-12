@@ -12,6 +12,7 @@ class _TabletLayoutState extends State<TabletLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text(widget.title), centerTitle: true,),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Center(

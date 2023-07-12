@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'package:snippeto/responsive/layout.dart';
 import 'package:snippeto/responsive/layouts/mobile.dart';
 import 'package:snippeto/responsive/layouts/tablet.dart';
@@ -8,7 +12,10 @@ import 'package:snippeto/responsive/theme_provider.dart';
 
 Color seedColor = Color(Colors.blue.value);
 
-void main() {
+void main() async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(ChangeNotifierProvider(
     create: (_) => ThemeProvider(),
     child: const MyApp(),
@@ -38,7 +45,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         themeMode: themeProvider.themeMode,
-        home: const HomePage(title: 'Hello World'),
+        home: const HomePage(title: 'Snippeto (EarlyAccess)'),
       ),
     );
   }

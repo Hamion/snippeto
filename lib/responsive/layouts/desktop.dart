@@ -22,7 +22,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
   void initState() {
     super.initState();
     pages = [
-      const Homepage(),
+      Homepage(title: widget.title),
       Settings(themeProvider: widget.themeProvider),
     ];
   }
@@ -32,26 +32,37 @@ class _DesktopLayoutState extends State<DesktopLayout> {
     return Scaffold(
       body: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: NavigationDrawer(
-              elevation: 0,
-              selectedIndex: navigationIndex,
-              onDestinationSelected: (value) => setState(() {
-                navigationIndex = value;
-              }),
-              children: const [
-                NavigationDrawerDestination(
-                  selectedIcon: Icon(Icons.home),
-                  icon: Icon(Icons.home_outlined),
-                  label: Text('Homepage'),
-                ),
-                NavigationDrawerDestination(
-                  selectedIcon: Icon(Icons.settings),
-                  icon: Icon(Icons.settings_outlined),
-                  label: Text('Settings'),
-                ),
-              ],
+          Card(
+            elevation: 1,
+            shadowColor: Colors.transparent,
+            margin: EdgeInsets.zero,
+            shape:
+                const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: NavigationDrawer(
+                elevation: 1,
+                selectedIndex: navigationIndex,
+                onDestinationSelected: (value) => setState(() {
+                  navigationIndex = value;
+                }),
+                children: [
+                  DrawerHeader(
+                    child: Text(widget.title,
+                        style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  const NavigationDrawerDestination(
+                    selectedIcon: Icon(Icons.home),
+                    icon: Icon(Icons.home_outlined),
+                    label: Text('Homepage'),
+                  ),
+                  const NavigationDrawerDestination(
+                    selectedIcon: Icon(Icons.settings),
+                    icon: Icon(Icons.settings_outlined),
+                    label: Text('Settings'),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(

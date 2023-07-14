@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:snippeto/m3_feedback.dart';
 import 'firebase_options.dart';
 
 import 'package:snippeto/responsive/layout.dart';
@@ -64,12 +65,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveLayout(
-      mobileLayout: MobileLayout(title: widget.title),
-      tabletLayout: TabletLayout(title: widget.title),
-      desktopLayout: DesktopLayout(
-          title: widget.title,
-          themeProvider: Provider.of<ThemeProvider>(context)),
+    return FeedbackScreenshotContainer(
+      child: ResponsiveLayout(
+        mobileLayout: MobileLayout(title: widget.title),
+        tabletLayout: TabletLayout(title: widget.title),
+        desktopLayout: DesktopLayout(
+            title: widget.title,
+            themeProvider: Provider.of<ThemeProvider>(context)),
+      ),
     );
   }
 }

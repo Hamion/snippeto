@@ -3,6 +3,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:snippeto/m3_feedback.dart';
+
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 class Homepage extends StatefulWidget {
@@ -56,6 +58,18 @@ class _HomepageState extends State<Homepage> {
       });
     }
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.feedback),
+            onPressed: () {
+              BottomSheetFeedback().show(context);
+            },
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

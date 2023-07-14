@@ -46,17 +46,13 @@ class _DesktopLayoutState extends State<DesktopLayout> {
                 onDestinationSelected: (value) => setState(() {
                   navigationIndex = value;
                 }),
-                children: [
-                  DrawerHeader(
-                    child: Text(widget.title,
-                        style: Theme.of(context).textTheme.titleLarge),
-                  ),
-                  const NavigationDrawerDestination(
+                children: const [
+                  NavigationDrawerDestination(
                     selectedIcon: Icon(Icons.home),
                     icon: Icon(Icons.home_outlined),
                     label: Text('Homepage'),
                   ),
-                  const NavigationDrawerDestination(
+                  NavigationDrawerDestination(
                     selectedIcon: Icon(Icons.settings),
                     icon: Icon(Icons.settings_outlined),
                     label: Text('Settings'),

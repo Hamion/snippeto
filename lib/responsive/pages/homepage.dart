@@ -3,7 +3,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:snippeto/m3_feedback.dart';
+import 'package:snippeto/feedback_m3.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
@@ -64,7 +64,7 @@ class _HomepageState extends State<Homepage> {
           IconButton(
             icon: const Icon(Icons.feedback),
             onPressed: () {
-              BottomSheetFeedback().show(context);
+              MaterialFeedback.of(context).show(context);
             },
           ),
           const SizedBox(width: 16),

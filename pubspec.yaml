@@ -25,6 +25,8 @@ dependencies:
   firebase_analytics: ^10.1.6
   firebase_core: ^2.8.0
   screenshot: ^2.1.0
+  side_sheet_material3: ^0.0.1
+  animations: ^2.0.7
   # feedback: ^2.6.0
   # feedback_gitlab: ^2.2.0
 

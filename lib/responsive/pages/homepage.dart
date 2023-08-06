@@ -3,8 +3,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:snippeto/custom_packages/extended_scaffold/src/base.dart';
 // import 'package:snippeto/feedback_m3.dart';
-import 'package:snippeto/m3_side_sheet.dart';
+// import 'package:snippeto/m3_scaffold.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
@@ -58,59 +59,54 @@ class _HomepageState extends State<Homepage> {
         );
       });
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.feedback),
-            onPressed: () {
-              MaterialSideSheet.of(context).show();
-              // MaterialFeedback.of(context).show(context);
-              // SideSheet().showModalSideSheet(
-              //   context: context,
-              //   title: "Mashalla",
-              //   body: const Column(
-              //     children: [
-              //       Text("Hello World"),
-              //     ],
-              //   ),
-              // );
-            },
+    return ExtendedScaffold(
+      siteSheet: const SiteSheetM3(headline: "Hello World", detached: true),
+      child: (scaffoldController) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.feedback),
+                onPressed: () {
+                  scaffoldController.showSideSheet();
+                },
+              ),
+              const SizedBox(width: 16),
+            ],
           ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                color: Theme.of(context).colorScheme.tertiaryContainer,
-              ),
-              alignment: AlignmentDirectional.center,
-              padding: const EdgeInsets.symmetric(vertical: 64),
-              margin: const EdgeInsets.all(16),
-              child: ListTile(
-                title: Text(
-                  "Snippeto",
-                  style: Theme.of(context).textTheme.displayLarge,
-                  textAlign: TextAlign.center,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                  ),
+                  alignment: AlignmentDirectional.center,
+                  padding: const EdgeInsets.symmetric(vertical: 64),
+                  margin: const EdgeInsets.all(16),
+                  child: ListTile(
+                    title: Text(
+                      "Snippeto",
+                      style: Theme.of(context).textTheme.displayLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    subtitle: Text(
+                      "Snippeto offers pre-designed Flutter widgets that you can easily customize and implement. Create advanced components, screens, and functionalities with ease using Snippeto.",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    isThreeLine: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 64),
+                    visualDensity: VisualDensity.adaptivePlatformDensity,
+                  ),
                 ),
-                subtitle: Text(
-                  "Snippeto offers pre-designed Flutter widgets that you can easily customize and implement. Create advanced components, screens, and functionalities with ease using Snippeto.",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-                isThreeLine: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 64),
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

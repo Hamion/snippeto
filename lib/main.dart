@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:snippeto/feedback_m3.dart';
-import 'package:snippeto/m3_side_sheet.dart';
 import 'firebase_options.dart';
 
 import 'package:snippeto/responsive/layout.dart';
@@ -67,17 +66,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialFeedback(
-      child: MaterialSideSheet(
-        sidesheet: const Center(
-          child: Text("Hello World"),
-        ),
-        child: ResponsiveLayout(
-          mobileLayout: MobileLayout(title: widget.title),
-          tabletLayout: TabletLayout(title: widget.title),
-          desktopLayout: DesktopLayout(
-              title: widget.title,
-              themeProvider: Provider.of<ThemeProvider>(context)),
-        ),
+      child: ResponsiveLayout(
+        mobileLayout: MobileLayout(title: widget.title),
+        tabletLayout: TabletLayout(title: widget.title),
+        desktopLayout: DesktopLayout(
+            title: widget.title,
+            themeProvider: Provider.of<ThemeProvider>(context)),
       ),
     );
   }

@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 class MaterialSideSheet extends StatefulWidget {
   final bool modal;
-  final Widget sidesheet;
+  final bool detached;
+  final String? title;
+  final Widget? sidesheet;
   final Widget child;
   const MaterialSideSheet(
       {Key? key,
       this.modal = true,
-      required this.sidesheet,
+      this.detached = false,
+      this.title,
+      this.sidesheet,
       required this.child})
       : super(key: key);
   @override
@@ -27,6 +31,7 @@ class MaterialSideSheetState extends State<MaterialSideSheet>
   bool visible = false;
   double x = 0;
   double y = 0;
+  double m = 0;
 
   @override
   void initState() {
@@ -45,6 +50,7 @@ class MaterialSideSheetState extends State<MaterialSideSheet>
         visible = true;
         x = 400;
         y = 256;
+        m = 16;
       });
     }
   }
@@ -54,63 +60,209 @@ class MaterialSideSheetState extends State<MaterialSideSheet>
       setState(() {
         animation.reverse();
         visible = false;
-        x = y = 0;
+        x = y = m = 0;
       });
     }
   }
 
   Widget _sideSheet() {
     ThemeData theme = Theme.of(context);
-    return AnimatedContainer(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.horizontal(
-          left: Directionality.of(context) == TextDirection.ltr
-              ? const Radius.circular(28)
-              : Radius.zero,
-          right: Directionality.of(context) == TextDirection.ltr
-              ? Radius.zero
-              : const Radius.circular(28),
-        ),
-      ),
-      duration: visible ? enterDuration : exitDuration,
-      curve: visible ? easeIn : easeOut,
-      constraints:
-          BoxConstraints(maxWidth: x, minWidth: y, minHeight: double.maxFinite),
-      child: Material(
-        elevation: 1,
-        color: theme.colorScheme.surface,
-        child: FadeTransition(
-          opacity: CurvedAnimation(
-            parent: animation,
-            curve: easeIn,
-            reverseCurve: easeOut,
+    if (widget.modal) {
+      if (widget.detached) {
+        return AnimatedContainer(
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.only(
+            top: 16,
+            left: Directionality.of(context) == TextDirection.ltr ? 64 : m,
+            right: Directionality.of(context) == TextDirection.ltr ? m : 64,
+            bottom: 16,
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-            child: Column(
-              children: [
-                AppBar(
-                  automaticallyImplyLeading: false,
-                  titleSpacing: 0,
-                  title: const Text("Hello World"),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        hide();
-                      },
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          duration: visible ? enterDuration : exitDuration,
+          curve: visible ? easeIn : easeOut,
+          constraints: BoxConstraints(
+              maxWidth: x, minWidth: y, minHeight: double.maxFinite),
+          child: Material(
+            elevation: 1,
+            color: theme.colorScheme.surface,
+            child: FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: easeIn,
+                reverseCurve: easeOut,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  children: [
+                    AppBar(
+                      automaticallyImplyLeading: false,
+                      titleSpacing: 0,
+                      title: Text(widget.title ?? ""),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            hide();
+                          },
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 12),
+                    widget.sidesheet ?? const SizedBox(),
                   ],
                 ),
-                const SizedBox(height: 12),
-                widget.sidesheet,
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        );
+      } else {
+        return AnimatedContainer(
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.only(
+            left: Directionality.of(context) == TextDirection.ltr ? 64 : 0,
+            right: Directionality.of(context) == TextDirection.ltr ? 0 : 64,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.horizontal(
+              left: Directionality.of(context) == TextDirection.ltr
+                  ? const Radius.circular(28)
+                  : Radius.zero,
+              right: Directionality.of(context) == TextDirection.ltr
+                  ? Radius.zero
+                  : const Radius.circular(28),
+            ),
+          ),
+          duration: visible ? enterDuration : exitDuration,
+          curve: visible ? easeIn : easeOut,
+          constraints: BoxConstraints(
+              maxWidth: x, minWidth: y, minHeight: double.maxFinite),
+          child: Material(
+            elevation: 1,
+            color: theme.colorScheme.surface,
+            child: FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: easeIn,
+                reverseCurve: easeOut,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  children: [
+                    AppBar(
+                      automaticallyImplyLeading: false,
+                      titleSpacing: 0,
+                      title: Text(widget.title ?? ""),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            hide();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    widget.sidesheet ?? const SizedBox(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    } else {
+      if (widget.detached) {
+        return AnimatedContainer(
+          clipBehavior: Clip.antiAlias,
+          duration: visible ? enterDuration : exitDuration,
+          curve: visible ? easeIn : easeOut,
+          margin: EdgeInsets.fromLTRB(m, 16, m, 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          constraints: BoxConstraints(
+              maxWidth: x, minWidth: y, minHeight: double.maxFinite),
+          child: Material(
+            elevation: 0,
+            color: ElevationOverlay.applySurfaceTint(
+                theme.colorScheme.surface, theme.colorScheme.surfaceTint, 1),
+            child: FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: easeIn,
+                reverseCurve: easeOut,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  children: [
+                    AppBar(
+                      automaticallyImplyLeading: false,
+                      titleSpacing: 0,
+                      title: Text(widget.title ?? ""),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            hide();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    widget.sidesheet ?? const SizedBox(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        return AnimatedContainer(
+          duration: visible ? enterDuration : exitDuration,
+          curve: visible ? easeIn : easeOut,
+          constraints: BoxConstraints(
+              maxWidth: x, minWidth: y, minHeight: double.maxFinite),
+          child: Material(
+            elevation: 0,
+            color: theme.colorScheme.surface,
+            child: FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: easeIn,
+                reverseCurve: easeOut,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  children: [
+                    AppBar(
+                      automaticallyImplyLeading: false,
+                      titleSpacing: 0,
+                      title: Text(widget.title ?? ""),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            hide();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    widget.sidesheet ?? const SizedBox(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -141,6 +293,14 @@ class MaterialSideSheetState extends State<MaterialSideSheet>
               ),
             ],
           )
-        : widget.child;
+        : Container(
+            color: Theme.of(context).colorScheme.background,
+            child: Row(
+              children: [
+                Expanded(child: widget.child),
+                _sideSheet(),
+              ],
+            ),
+          );
   }
 }

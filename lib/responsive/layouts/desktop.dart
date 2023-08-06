@@ -33,7 +33,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
       body: Row(
         children: [
           Card(
-            elevation: 1,
+            elevation: 0,
             shadowColor: Colors.transparent,
             margin: EdgeInsets.zero,
             shape:
@@ -41,7 +41,7 @@ class _DesktopLayoutState extends State<DesktopLayout> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: NavigationDrawer(
-                elevation: 1,
+                elevation: 0,
                 selectedIndex: navigationIndex,
                 onDestinationSelected: (value) => setState(() {
                   navigationIndex = value;

@@ -96,7 +96,6 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
       duration: enterDuration,
       reverseDuration: exitDuration,
     );
-    animation.reverse();
   }
 
   @override
@@ -109,9 +108,11 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
   Widget _sideSheet() {
     SiteSheetM3 siteSheet = widget.siteSheet!;
     bool ltr = Directionality.of(context) == TextDirection.ltr;
-    Color color = Theme.of(context).colorScheme.surface;
     BorderRadius? borderRadius;
     EdgeInsets? margin;
+    Border? verticalDivider;
+    double elevation = 1;
+
     if (siteSheet.modal) {
       if (siteSheet.detached) {
         margin = EdgeInsets.fromLTRB(ltr ? 64 : m, 16, ltr ? m : 64, 16);
@@ -124,11 +125,25 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
       }
     } else {
       if (siteSheet.detached) {
-        margin = EdgeInsets.fromLTRB(m, 16, m, 16);
+        margin = ltr
+            ? EdgeInsets.fromLTRB(0, 0, m, 16)
+            : EdgeInsets.fromLTRB(m, 0, 0, 16);
         borderRadius = BorderRadius.circular(28);
       } else {
+        elevation = 0;
         margin = EdgeInsets.zero;
         borderRadius = BorderRadius.zero;
+        verticalDivider = ltr
+            ? Border(
+                left: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              )
+            : Border(
+                right: BorderSide(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+              );
       }
     }
 
@@ -144,33 +159,39 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
         borderRadius: borderRadius,
       ),
       child: Material(
-        color: color,
-        elevation: siteSheet.modal ? 1 : 0,
+        type: MaterialType.canvas,
+        color: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
+        elevation: elevation,
         child: FadeTransition(
           opacity: CurvedAnimation(
             parent: animation,
             curve: easeIn,
             reverseCurve: easeOut,
           ),
-          child: Padding(
-            padding: Directionality.of(context) == TextDirection.ltr
-                ? const EdgeInsets.fromLTRB(16, 24, 24, 24)
-                : const EdgeInsets.fromLTRB(24, 24, 16, 24),
-            child: Column(
-              children: [
-                AppBar(
-                  automaticallyImplyLeading: false,
-                  title: Text(siteSheet.headline),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        scaffoldController.hideSideSheet();
-                      },
-                    ),
-                  ],
-                ),
-              ],
+          child: Container(
+            decoration: BoxDecoration(border: verticalDivider),
+            child: Padding(
+              padding: Directionality.of(context) == TextDirection.ltr
+                  ? const EdgeInsets.fromLTRB(16, 8, 24, 24)
+                  : const EdgeInsets.fromLTRB(24, 8, 16, 24),
+              child: Column(
+                children: [
+                  AppBar(
+                    forceMaterialTransparency: true,
+                    automaticallyImplyLeading: false,
+                    title: Text(siteSheet.headline),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          scaffoldController.hideSideSheet();
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -240,7 +261,44 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
           ],
         );
       } else {
-        return widget.child(scaffoldController);
+        Scaffold scaffold = widget.child(scaffoldController);
+        return Scaffold(
+          appBar: scaffold.appBar,
+          backgroundColor: scaffold.backgroundColor,
+          body: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: scaffold.body ?? const SizedBox(),
+              ),
+              _sideSheet(),
+            ],
+          ),
+          bottomNavigationBar: scaffold.bottomNavigationBar,
+          bottomSheet: scaffold.bottomSheet,
+          drawer: scaffold.drawer,
+          drawerDragStartBehavior: scaffold.drawerDragStartBehavior,
+          drawerEdgeDragWidth: scaffold.drawerEdgeDragWidth,
+          drawerEnableOpenDragGesture: scaffold.drawerEnableOpenDragGesture,
+          drawerScrimColor: scaffold.drawerScrimColor,
+          endDrawer: scaffold.endDrawer,
+          endDrawerEnableOpenDragGesture:
+              scaffold.endDrawerEnableOpenDragGesture,
+          extendBody: scaffold.extendBody,
+          extendBodyBehindAppBar: scaffold.extendBodyBehindAppBar,
+          floatingActionButton: scaffold.floatingActionButton,
+          floatingActionButtonAnimator: scaffold.floatingActionButtonAnimator,
+          floatingActionButtonLocation: scaffold.floatingActionButtonLocation,
+          key: scaffold.key,
+          onDrawerChanged: scaffold.onDrawerChanged,
+          onEndDrawerChanged: scaffold.onEndDrawerChanged,
+          persistentFooterAlignment: scaffold.persistentFooterAlignment,
+          persistentFooterButtons: scaffold.persistentFooterButtons,
+          primary: scaffold.primary,
+          resizeToAvoidBottomInset: scaffold.resizeToAvoidBottomInset,
+          restorationId: scaffold.restorationId,
+        );
       }
     } else {
       return widget.child(scaffoldController);

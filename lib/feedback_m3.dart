@@ -269,24 +269,6 @@ class MaterialFeedbackState extends State<MaterialFeedback> {
         ],
       ),
     );
-    // showModalSideSheet(
-    //   context,
-    //   addActions: false,
-    //   addDivider: false,
-    //   header: "Submit feedback to Hamion",
-    //   body: StatefulBuilder(
-    //     builder: (context, StateSetter setter) {
-    //       switch (feedbackIndex) {
-    //         case 0:
-    //           return page0(setter);
-    //         case 1:
-    //           return page1(setter);
-    //         default:
-    //           return const Text("Hello World");
-    //       }
-    //     },
-    //   ),
-    // );
   }
 
   @override

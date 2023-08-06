@@ -60,7 +60,8 @@ class _HomepageState extends State<Homepage> {
       });
     }
     return ExtendedScaffold(
-      siteSheet: const SiteSheetM3(headline: "Hello World", detached: true),
+      siteSheet: const SiteSheetM3(
+          headline: "Hello World", modal: false, detached: true),
       child: (scaffoldController) {
         return Scaffold(
           appBar: AppBar(
@@ -85,7 +86,11 @@ class _HomepageState extends State<Homepage> {
                   ),
                   alignment: AlignmentDirectional.center,
                   padding: const EdgeInsets.symmetric(vertical: 64),
-                  margin: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 16,
+                  ),
                   child: ListTile(
                     title: Text(
                       "Snippeto",

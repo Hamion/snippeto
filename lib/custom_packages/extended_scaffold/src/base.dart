@@ -6,13 +6,13 @@ import 'data.dart';
 typedef ScaffoldBuilder = Scaffold Function(
     ExtendedScaffoldController scaffoldController);
 
-class SiteSheetM3 extends StatelessWidget {
+class SideSheetM3 extends StatelessWidget {
   final bool modal;
   final bool detached;
   final String headline;
   final Widget child;
 
-  const SiteSheetM3({
+  const SideSheetM3({
     super.key,
     this.modal = true,
     this.detached = false,
@@ -27,12 +27,12 @@ class SiteSheetM3 extends StatelessWidget {
 }
 
 class ExtendedScaffold extends StatefulWidget {
-  final SiteSheetM3? siteSheet;
+  final SideSheetM3? sideSheet;
   final ScaffoldBuilder child;
 
   const ExtendedScaffold({
     super.key,
-    this.siteSheet,
+    this.sideSheet,
     required this.child,
   });
 
@@ -50,8 +50,9 @@ class ExtendedScaffold extends StatefulWidget {
 
 class _ExtendedScaffoldState extends State<ExtendedScaffold>
     with TickerProviderStateMixin {
-  Duration enterDuration = const Duration(milliseconds: 400);
-  Duration exitDuration = const Duration(milliseconds: 200);
+  Duration modalEnterDuration = const Duration(milliseconds: 400);
+  Duration modalExitDuration = const Duration(milliseconds: 200);
+  Duration standardDuration = const Duration(milliseconds: 600);
   Curve easeIn = const Cubic(0.05, 0.7, 0.1, 1);
   Curve easeOut = const Cubic(0.3, 0, 0.8, 0.15);
   late AnimationController animation;
@@ -80,6 +81,12 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
   }
 
   void onControllerChanged() {
+    animation = AnimationController(
+      vsync: this,
+      duration: widget.sideSheet!.modal ? modalEnterDuration : standardDuration,
+      reverseDuration:
+          widget.sideSheet!.modal ? modalExitDuration : standardDuration,
+    );
     if (scaffoldController.sideSheetVisible) {
       _showSideSheet();
     } else {
@@ -91,11 +98,15 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
   void initState() {
     super.initState();
     scaffoldController.addListener(onControllerChanged);
-    animation = AnimationController(
-      vsync: this,
-      duration: enterDuration,
-      reverseDuration: exitDuration,
-    );
+    if (widget.sideSheet != null) {
+      animation = AnimationController(
+        vsync: this,
+        duration:
+            widget.sideSheet!.modal ? modalEnterDuration : standardDuration,
+        reverseDuration:
+            widget.sideSheet!.modal ? modalExitDuration : standardDuration,
+      );
+    }
   }
 
   @override
@@ -106,15 +117,15 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
   }
 
   Widget _sideSheet() {
-    SiteSheetM3 siteSheet = widget.siteSheet!;
+    SideSheetM3 sideSheet = widget.sideSheet!;
     bool ltr = Directionality.of(context) == TextDirection.ltr;
     BorderRadius? borderRadius;
     EdgeInsets? margin;
     Border? verticalDivider;
     double elevation = 1;
 
-    if (siteSheet.modal) {
-      if (siteSheet.detached) {
+    if (sideSheet.modal) {
+      if (sideSheet.detached) {
         margin = EdgeInsets.fromLTRB(ltr ? 64 : m, 16, ltr ? m : 64, 16);
         borderRadius = BorderRadius.circular(28);
       } else {
@@ -124,7 +135,7 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
             : const BorderRadius.horizontal(right: Radius.circular(28));
       }
     } else {
-      if (siteSheet.detached) {
+      if (sideSheet.detached) {
         margin = ltr
             ? EdgeInsets.fromLTRB(0, 0, m, 16)
             : EdgeInsets.fromLTRB(m, 0, 0, 16);
@@ -148,13 +159,13 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
     }
 
     return AnimatedContainer(
-      duration: visible ? enterDuration : exitDuration,
-      curve: visible ? easeIn : easeOut,
+      duration: visible ? animation.duration! : animation.reverseDuration!,
+      curve: visible ? easeIn : (sideSheet.modal ? easeOut : easeIn),
       margin: margin,
       constraints:
           BoxConstraints(maxWidth: x, minWidth: y, minHeight: double.maxFinite),
       clipBehavior:
-          (siteSheet.modal || siteSheet.detached) ? Clip.antiAlias : Clip.none,
+          (sideSheet.modal || sideSheet.detached) ? Clip.antiAlias : Clip.none,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
       ),
@@ -167,7 +178,7 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
           opacity: CurvedAnimation(
             parent: animation,
             curve: easeIn,
-            reverseCurve: easeOut,
+            reverseCurve: sideSheet.modal ? easeOut : easeIn,
           ),
           child: Container(
             decoration: BoxDecoration(border: verticalDivider),
@@ -180,7 +191,7 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
                   AppBar(
                     forceMaterialTransparency: true,
                     automaticallyImplyLeading: false,
-                    title: Text(siteSheet.headline),
+                    title: Text(sideSheet.headline),
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -201,8 +212,8 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.siteSheet != null) {
-      if (widget.siteSheet!.modal) {
+    if (widget.sideSheet != null) {
+      if (widget.sideSheet!.modal) {
         return Stack(
           children: [
             widget.child(scaffoldController),

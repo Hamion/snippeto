@@ -18,6 +18,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late SharedPreferences prefs;
+  late SideSheetM3 sideSheetM3;
   int cookies = 0;
 
   void initPrefs() async {
@@ -33,6 +34,11 @@ class _HomepageState extends State<Homepage> {
     if (cookies == 0) {
       initPrefs();
     }
+    sideSheetM3 = const SideSheetM3(
+      headline: "Hello World",
+      detached: true,
+      modal: false,
+    );
   }
 
   @override
@@ -45,7 +51,7 @@ class _HomepageState extends State<Homepage> {
             margin: EdgeInsets.fromLTRB(
                 15.0, 5.0, (MediaQuery.of(context).size.width / 2) + 128, 10.0),
             content: const Text(
-                "This Website uses cookies, if you mind, leave the website."),
+                "This WebSide uses cookies, if you mind, leave the webSide."),
             duration: const Duration(days: 365),
             action: SnackBarAction(
               label: "Ok",
@@ -60,8 +66,7 @@ class _HomepageState extends State<Homepage> {
       });
     }
     return ExtendedScaffold(
-      siteSheet: const SiteSheetM3(
-          headline: "Hello World", modal: false, detached: true),
+      sideSheet: sideSheetM3,
       child: (scaffoldController) {
         return Scaffold(
           appBar: AppBar(
@@ -70,7 +75,33 @@ class _HomepageState extends State<Homepage> {
               IconButton(
                 icon: const Icon(Icons.feedback),
                 onPressed: () {
-                  scaffoldController.showSideSheet();
+                  if (sideSheetM3.modal) {
+                    scaffoldController.showSideSheet();
+                  } else {
+                    setState(() {
+                      sideSheetM3 = SideSheetM3(
+                        headline: sideSheetM3.headline,
+                        modal: true,
+                        detached: false,
+                      );
+                    });
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.feedback),
+                onPressed: () {
+                  if (sideSheetM3.modal) {
+                    setState(() {
+                      sideSheetM3 = SideSheetM3(
+                        headline: sideSheetM3.headline,
+                        modal: false,
+                        detached: true,
+                      );
+                    });
+                  } else {
+                    scaffoldController.showSideSheet();
+                  }
                 },
               ),
               const SizedBox(width: 16),

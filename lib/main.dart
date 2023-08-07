@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snippeto/custom_packages/extended_scaffold/src/base.dart';
+import 'package:snippeto/custom_packages/extend_scaffold/src/base.dart';
 import 'firebase_options.dart';
 import 'package:snippeto/theme_provider.dart';
 
@@ -180,7 +180,7 @@ class _HomePageState extends State<HomePage> {
         );
       });
     }
-    return ExtendedScaffold(
+    return ExtendScaffold(
       drawerLayout: (scaffoldController) {
         return NavigationDrawer(
           selectedIndex: scaffoldController.drawerIndex,

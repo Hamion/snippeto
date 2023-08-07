@@ -17,4 +17,15 @@ class ExtendedScaffoldController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  int _drawerIndex = 0;
+  int get drawerIndex => _drawerIndex;
+  set drawerIndex(int index) {
+    _drawerIndex = index;
+    if (_sideSheetVisible) {
+      hideSideSheet();
+    } else {
+      notifyListeners();
+    }
+  }
 }

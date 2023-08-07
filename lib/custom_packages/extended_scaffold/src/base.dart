@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'controller.dart';
 import 'data.dart';
 
-typedef ScaffoldBuilder = Scaffold Function(
-    ExtendedScaffoldController scaffoldController);
+enum WindowClass { compact, medium, expanded }
 
 class SideSheetM3 extends StatelessWidget {
   final bool modal;
   final bool detached;
+  final bool divider;
   final String headline;
   final Widget child;
 
@@ -16,6 +16,7 @@ class SideSheetM3 extends StatelessWidget {
     super.key,
     this.modal = true,
     this.detached = false,
+    this.divider = true,
     this.headline = "",
     this.child = const SizedBox(),
   });
@@ -26,12 +27,19 @@ class SideSheetM3 extends StatelessWidget {
   }
 }
 
+typedef DrawerBuilder = NavigationDrawer Function(
+    ExtendedScaffoldController scaffoldController);
+typedef ScaffoldBuilder = Scaffold Function(
+    ExtendedScaffoldController scaffoldController);
+
 class ExtendedScaffold extends StatefulWidget {
+  final DrawerBuilder? drawerLayout;
   final SideSheetM3? sideSheet;
   final ScaffoldBuilder child;
 
   const ExtendedScaffold({
     super.key,
+    this.drawerLayout,
     this.sideSheet,
     required this.child,
   });
@@ -42,8 +50,6 @@ class ExtendedScaffold extends StatefulWidget {
   static ExtendedScaffoldController of(BuildContext context) {
     final sideSheetData =
         context.dependOnInheritedWidgetOfExactType<ExtendedScaffoldData>();
-    assert(sideSheetData != null,
-        'You need to add a $ExtendedScaffold widget above this context!');
     return sideSheetData!.controller;
   }
 }
@@ -116,7 +122,7 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
     super.dispose();
   }
 
-  Widget _sideSheet() {
+  Widget _sideSheet(WindowClass windowClass) {
     SideSheetM3 sideSheet = widget.sideSheet!;
     bool ltr = Directionality.of(context) == TextDirection.ltr;
     BorderRadius? borderRadius;
@@ -124,7 +130,8 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
     Border? verticalDivider;
     double elevation = 1;
 
-    if (sideSheet.modal) {
+    if (windowClass == WindowClass.compact && !sideSheet.modal ||
+        windowClass != WindowClass.compact && sideSheet.modal) {
       if (sideSheet.detached) {
         margin = EdgeInsets.fromLTRB(ltr ? 64 : m, 16, ltr ? m : 64, 16);
         borderRadius = BorderRadius.circular(28);
@@ -144,17 +151,19 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
         elevation = 0;
         margin = EdgeInsets.zero;
         borderRadius = BorderRadius.zero;
-        verticalDivider = ltr
-            ? Border(
-                left: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              )
-            : Border(
-                right: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                ),
-              );
+        if (sideSheet.divider) {
+          verticalDivider = ltr
+              ? Border(
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                )
+              : Border(
+                  right: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                );
+        }
       }
     }
 
@@ -164,8 +173,11 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
       margin: margin,
       constraints:
           BoxConstraints(maxWidth: x, minWidth: y, minHeight: double.maxFinite),
-      clipBehavior:
-          (sideSheet.modal || sideSheet.detached) ? Clip.antiAlias : Clip.none,
+      clipBehavior: (sideSheet.modal ||
+              sideSheet.detached ||
+              windowClass == WindowClass.compact)
+          ? Clip.antiAlias
+          : Clip.none,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
       ),
@@ -191,7 +203,11 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
                   AppBar(
                     forceMaterialTransparency: true,
                     automaticallyImplyLeading: false,
-                    title: Text(sideSheet.headline),
+                    title: Text(sideSheet.headline,
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.close),
@@ -210,13 +226,60 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _layout(WindowClass windowClass) {
+    Scaffold scaffold = widget.child(scaffoldController);
     if (widget.sideSheet != null) {
-      if (widget.sideSheet!.modal) {
+      if (!widget.sideSheet!.modal && windowClass == WindowClass.compact ||
+          widget.sideSheet!.modal && windowClass != WindowClass.compact) {
         return Stack(
           children: [
-            widget.child(scaffoldController),
+            Scaffold(
+              appBar: scaffold.appBar,
+              backgroundColor: scaffold.backgroundColor,
+              body: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: scaffold.body ?? const SizedBox(),
+                  ),
+                ],
+              ),
+              bottomNavigationBar: scaffold.bottomNavigationBar,
+              bottomSheet: scaffold.bottomSheet,
+              drawer: (widget.drawerLayout != null)
+                  ? NavigationDrawer(
+                      selectedIndex: widget
+                          .drawerLayout!(scaffoldController).selectedIndex,
+                      onDestinationSelected: widget
+                          .drawerLayout!(scaffoldController)
+                          .onDestinationSelected,
+                      children:
+                          widget.drawerLayout!(scaffoldController).children)
+                  : null,
+              drawerDragStartBehavior: scaffold.drawerDragStartBehavior,
+              drawerEdgeDragWidth: scaffold.drawerEdgeDragWidth,
+              drawerEnableOpenDragGesture: scaffold.drawerEnableOpenDragGesture,
+              drawerScrimColor: scaffold.drawerScrimColor,
+              endDrawer: scaffold.endDrawer,
+              endDrawerEnableOpenDragGesture:
+                  scaffold.endDrawerEnableOpenDragGesture,
+              extendBody: scaffold.extendBody,
+              extendBodyBehindAppBar: scaffold.extendBodyBehindAppBar,
+              floatingActionButton: scaffold.floatingActionButton,
+              floatingActionButtonAnimator:
+                  scaffold.floatingActionButtonAnimator,
+              floatingActionButtonLocation:
+                  scaffold.floatingActionButtonLocation,
+              key: scaffold.key,
+              onDrawerChanged: scaffold.onDrawerChanged,
+              onEndDrawerChanged: scaffold.onEndDrawerChanged,
+              persistentFooterAlignment: scaffold.persistentFooterAlignment,
+              persistentFooterButtons: scaffold.persistentFooterButtons,
+              primary: scaffold.primary,
+              resizeToAvoidBottomInset: scaffold.resizeToAvoidBottomInset,
+              restorationId: scaffold.restorationId,
+            ),
             visible
                 ? FadeTransition(
                     opacity: CurvedAnimation(
@@ -267,28 +330,109 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
                   ),
             Align(
               alignment: AlignmentDirectional.centerEnd,
-              child: _sideSheet(),
+              child: _sideSheet(windowClass),
             ),
           ],
         );
       } else {
-        Scaffold scaffold = widget.child(scaffoldController);
         return Scaffold(
-          appBar: scaffold.appBar,
+          appBar: (widget.drawerLayout != null &&
+                  windowClass == WindowClass.expanded)
+              ? null
+              : scaffold.appBar,
           backgroundColor: scaffold.backgroundColor,
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: scaffold.body ?? const SizedBox(),
-              ),
-              _sideSheet(),
-            ],
+            children: (widget.drawerLayout != null &&
+                    windowClass == WindowClass.expanded)
+                ? [
+                    NavigationDrawer(
+                      elevation: 0,
+                      selectedIndex: widget
+                          .drawerLayout!(scaffoldController).selectedIndex,
+                      onDestinationSelected: widget
+                          .drawerLayout!(scaffoldController)
+                          .onDestinationSelected,
+                      children:
+                          widget.drawerLayout!(scaffoldController).children,
+                    ),
+                    Expanded(
+                      child: Scaffold(
+                        appBar: scaffold.appBar,
+                        backgroundColor: scaffold.backgroundColor,
+                        body: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: scaffold.body ?? const SizedBox(),
+                            ),
+                            _sideSheet(windowClass),
+                          ],
+                        ),
+                        bottomNavigationBar: scaffold.bottomNavigationBar,
+                        bottomSheet: scaffold.bottomSheet,
+                        drawer: (widget.drawerLayout != null &&
+                                windowClass == WindowClass.medium)
+                            ? NavigationDrawer(
+                                selectedIndex: widget
+                                    .drawerLayout!(scaffoldController)
+                                    .selectedIndex,
+                                onDestinationSelected: widget
+                                    .drawerLayout!(scaffoldController)
+                                    .onDestinationSelected,
+                                children: widget
+                                    .drawerLayout!(scaffoldController).children)
+                            : null,
+                        drawerDragStartBehavior:
+                            scaffold.drawerDragStartBehavior,
+                        drawerEdgeDragWidth: scaffold.drawerEdgeDragWidth,
+                        drawerEnableOpenDragGesture:
+                            scaffold.drawerEnableOpenDragGesture,
+                        drawerScrimColor: scaffold.drawerScrimColor,
+                        endDrawer: scaffold.endDrawer,
+                        endDrawerEnableOpenDragGesture:
+                            scaffold.endDrawerEnableOpenDragGesture,
+                        extendBody: scaffold.extendBody,
+                        extendBodyBehindAppBar: scaffold.extendBodyBehindAppBar,
+                        floatingActionButton: scaffold.floatingActionButton,
+                        floatingActionButtonAnimator:
+                            scaffold.floatingActionButtonAnimator,
+                        floatingActionButtonLocation:
+                            scaffold.floatingActionButtonLocation,
+                        key: scaffold.key,
+                        onDrawerChanged: scaffold.onDrawerChanged,
+                        onEndDrawerChanged: scaffold.onEndDrawerChanged,
+                        persistentFooterAlignment:
+                            scaffold.persistentFooterAlignment,
+                        persistentFooterButtons:
+                            scaffold.persistentFooterButtons,
+                        primary: scaffold.primary,
+                        resizeToAvoidBottomInset:
+                            scaffold.resizeToAvoidBottomInset,
+                        restorationId: scaffold.restorationId,
+                      ),
+                    ),
+                  ]
+                : [
+                    Expanded(
+                      child: scaffold.body ?? const SizedBox(),
+                    ),
+                    _sideSheet(windowClass),
+                  ],
           ),
           bottomNavigationBar: scaffold.bottomNavigationBar,
           bottomSheet: scaffold.bottomSheet,
-          drawer: scaffold.drawer,
+          drawer: (widget.drawerLayout != null &&
+                  windowClass == WindowClass.medium)
+              ? NavigationDrawer(
+                  selectedIndex:
+                      widget.drawerLayout!(scaffoldController).selectedIndex,
+                  onDestinationSelected: widget
+                      .drawerLayout!(scaffoldController).onDestinationSelected,
+                  children: widget.drawerLayout!(scaffoldController).children)
+              : null,
           drawerDragStartBehavior: scaffold.drawerDragStartBehavior,
           drawerEdgeDragWidth: scaffold.drawerEdgeDragWidth,
           drawerEnableOpenDragGesture: scaffold.drawerEnableOpenDragGesture,
@@ -314,5 +458,20 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
     } else {
       return widget.child(scaffoldController);
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth > 840) {
+          return _layout(WindowClass.expanded);
+        } else if (600 < constraints.maxWidth && constraints.maxWidth < 840) {
+          return _layout(WindowClass.medium);
+        } else {
+          return _layout(WindowClass.compact);
+        }
+      },
+    );
   }
 }

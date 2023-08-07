@@ -28,16 +28,16 @@ class SideSheetM3 extends StatelessWidget {
 }
 
 typedef DrawerBuilder = NavigationDrawer Function(
-    ExtendedScaffoldController scaffoldController);
+    ExtendScaffoldController scaffoldController);
 typedef ScaffoldBuilder = Scaffold Function(
-    ExtendedScaffoldController scaffoldController);
+    ExtendScaffoldController scaffoldController);
 
-class ExtendedScaffold extends StatefulWidget {
+class ExtendScaffold extends StatefulWidget {
   final DrawerBuilder? drawerLayout;
   final SideSheetM3? sideSheet;
   final ScaffoldBuilder child;
 
-  const ExtendedScaffold({
+  const ExtendScaffold({
     super.key,
     this.drawerLayout,
     this.sideSheet,
@@ -45,16 +45,16 @@ class ExtendedScaffold extends StatefulWidget {
   });
 
   @override
-  State<ExtendedScaffold> createState() => _ExtendedScaffoldState();
+  State<ExtendScaffold> createState() => _ExtendScaffoldState();
 
-  static ExtendedScaffoldController of(BuildContext context) {
+  static ExtendScaffoldController of(BuildContext context) {
     final sideSheetData =
-        context.dependOnInheritedWidgetOfExactType<ExtendedScaffoldData>();
+        context.dependOnInheritedWidgetOfExactType<ExtendScaffoldData>();
     return sideSheetData!.controller;
   }
 }
 
-class _ExtendedScaffoldState extends State<ExtendedScaffold>
+class _ExtendScaffoldState extends State<ExtendScaffold>
     with TickerProviderStateMixin {
   Duration modalEnterDuration = const Duration(milliseconds: 400);
   Duration modalExitDuration = const Duration(milliseconds: 200);
@@ -66,7 +66,7 @@ class _ExtendedScaffoldState extends State<ExtendedScaffold>
   double x = 0;
   double y = 0;
   double m = 0;
-  ExtendedScaffoldController scaffoldController = ExtendedScaffoldController();
+  ExtendScaffoldController scaffoldController = ExtendScaffoldController();
 
   void _showSideSheet() {
     setState(() {

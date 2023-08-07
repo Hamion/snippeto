@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'controller.dart';
 
-class ExtendedScaffoldData extends InheritedWidget {
-  final ExtendedScaffoldController controller;
-  const ExtendedScaffoldData({
+class ExtendScaffoldData extends InheritedWidget {
+  final ExtendScaffoldController controller;
+  const ExtendScaffoldData({
     Key? key,
     required this.controller,
     required Widget child,
   }) : super(key: key, child: child);
 
   @override
-  bool updateShouldNotify(ExtendedScaffoldData oldWidget) {
+  bool updateShouldNotify(ExtendScaffoldData oldWidget) {
     return oldWidget.controller != controller;
   }
 }

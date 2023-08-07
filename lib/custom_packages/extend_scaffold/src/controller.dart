@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class ExtendedScaffoldController extends ChangeNotifier {
+class ExtendScaffoldController extends ChangeNotifier {
   bool _sideSheetVisible = false;
   bool get sideSheetVisible => _sideSheetVisible;
 

@@ -7,7 +7,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snippeto/custom_packages/extended_scaffold/src/base.dart';
 import 'firebase_options.dart';
-import 'package:snippeto/responsive/theme_provider.dart';
+import 'package:snippeto/theme_provider.dart';
 
 FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 Color seedColor = Color(Colors.blue.value);
